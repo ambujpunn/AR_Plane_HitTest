@@ -64,10 +64,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     // MARK: 2.2
-    private func addPlane() {
+    // 4.2: hitTestResult argument
+    private func addPlane(hitTestResult: ARHitTestResult) {
         let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
         let planeNode = scene.rootNode.childNode(withName: "planeBanner", recursively: true)
         
+        // 4.3
+        planeNode?.position = SCNVector3(hitTestResult.worldTransform.columns.3.x,hitTestResult.worldTransform.columns.3.y, hitTestResult.worldTransform.columns.3.z)
         planeNode?.scale = .init(0.05, 0.05, 0.05)
         
         let bannerNode = planeNode?.childNode(withName: "banner", recursively: true)
@@ -94,6 +97,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // 3.4
             print(hitResult.worldTransform.columns.3)
             
+            // 4.1
+            addPlane(hitTestResult: hitResult)
         }
     }
     
