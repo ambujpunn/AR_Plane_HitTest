@@ -1,6 +1,0 @@
-version: "Apple Swift version 4.0.3 (swiftlang-900.0.74.1 clang-900.0.39.2)"
-options: "ea547103bdaa200081d8e4eb2e720715"
-build_time: [1522086204, 810804000]
-inputs:
-  "/Users/ambujpunn/dev/iOS/Next Reality/NextReality_PlaneHitTest/NextReality_PlaneHitTest/ViewController.swift": [1522086195, 0]
-  "/Users/ambujpunn/dev/iOS/Next Reality/NextReality_PlaneHitTest/NextReality_PlaneHitTest/AppDelegate.swift": [1522086195, 0]
