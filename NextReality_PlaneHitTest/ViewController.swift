@@ -23,8 +23,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
+        // 3.2 Add feature points debug options
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        
         // Create a new scene
-        //let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
         // 2.1
         let scene = SCNScene()
         
@@ -32,7 +34,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene = scene
         
         //2.3
-        addPlane()
+        //addPlane()
+        
+        //3.1
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+        sceneView.addGestureRecognizer(gestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -70,6 +76,25 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         bannerMaterial?.diffuse.contents = UIImage(named: "next_reality_logo")
         
         self.sceneView.scene.rootNode.addChildNode(planeNode!)
+    }
+    
+    // MARK: 3.3
+    @objc func tapped(recognizer :UIGestureRecognizer) {
+        // Get exact position where touch happened on screen of iPhone (2D coordinate)
+        let touchPosition = recognizer.location(in: sceneView)
+        
+        // Conduct a hit test based on a feature point that ARKit detected to find out what 3D point this 2D coordinate relates to
+        let hitTestResult = sceneView.hitTest(touchPosition, types: .featurePoint)
+        
+        if !hitTestResult.isEmpty {
+            
+            guard let hitResult = hitTestResult.first else {
+                return
+            }
+            // 3.4
+            print(hitResult.worldTransform.columns.3)
+            
+        }
     }
     
     // MARK: - ARSCNViewDelegate
