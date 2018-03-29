@@ -23,28 +23,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
-        // 3.2 Add feature points debug options
+        // Add feature points debug options
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
         // Create a new scene
-        // 2.1
         let scene = SCNScene()
         
         // Set the scene to the view
         sceneView.scene = scene
         
-        //2.3
-        //addPlane()
-        
-        //3.1
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
         sceneView.addGestureRecognizer(gestureRecognizer)
         
-        //5.1
         let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
         gestureRecognizer.require(toFail: doubleTapGestureRecognizer)
-        
         sceneView.addGestureRecognizer(doubleTapGestureRecognizer)
     }
     
@@ -70,14 +63,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Release any cached data, images, etc that aren't in use.
     }
     
-    // MARK: 2.2
-    // 4.2: hitTestResult argument
+    // MARK: Private
     private func addPlane(hitTestResult: ARHitTestResult) {
         let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
         let planeNode = scene.rootNode.childNode(withName: "planeBanner", recursively: true)
         planeNode?.name = "plane"
         
-        // 4.3
         planeNode?.position = SCNVector3(hitTestResult.worldTransform.columns.3.x,hitTestResult.worldTransform.columns.3.y, hitTestResult.worldTransform.columns.3.z)
         planeNode?.scale = .init(0.005, 0.005, 0.005)
         
@@ -89,7 +80,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(planeNode!)
     }
     
-    // MARK: 3.3
+    // MARK: Private
     @objc func tapped(recognizer: UIGestureRecognizer) {
         // Get exact position where touch happened on screen of iPhone (2D coordinate)
         let touchPosition = recognizer.location(in: sceneView)
@@ -102,17 +93,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             guard let hitResult = hitTestResult.first else {
                 return
             }
-            // 3.4
             print(hitResult.worldTransform.columns.3)
             
-            // 4.1
             addPlane(hitTestResult: hitResult)
         }
-        // 5.3
         recognizer.isEnabled = false
     }
     
-    // MARK: 5.2
+    // MARK: Private
     @objc func doubleTapped(recognizer: UIGestureRecognizer) {
         // Get exact position where touch happened on screen of iPhone (2D coordinate)
         let touchPosition = recognizer.location(in: sceneView)
@@ -124,7 +112,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             return
         }
         
-        // 5.3
         let planeGeometry = SCNPlane(width: 0.2, height: 0.2)
         let material = SCNMaterial()
         material.diffuse.contents = UIImage(named: "finish_flags")
@@ -139,10 +126,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let planeNode = sceneView.scene.rootNode.childNode(withName: "plane", recursively: true) {
             animatePlane(to: finishNode.position, node: planeNode)
         }
-        
     }
     
-    // 5.4
     private func animatePlane(to destinationPoint: SCNVector3, node: SCNNode) {
         let action = SCNAction.move(to: destinationPoint, duration: 7)
         node.runAction(action) { [weak self] in
