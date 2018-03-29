@@ -117,7 +117,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let touchPosition = recognizer.location(in: sceneView)
         
         // Conduct hit test on tapped point
-        let hitTestResult = sceneView.hitTest(touchPosition, options: nil)
+        let hitTestResult = sceneView.hitTest(touchPosition, types: .featurePoint)
         
         guard let hitResult = hitTestResult.first else {
             return
@@ -131,7 +131,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let finishNode = SCNNode(geometry: planeGeometry)
         finishNode.name = "finish"
-        finishNode.position = hitResult.worldCoordinates
+        finishNode.position = SCNVector3(hitResult.worldTransform.columns.3.x,hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
         sceneView.scene.rootNode.addChildNode(finishNode)
         
         // Find plane node and animate it to finish point
