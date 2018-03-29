@@ -108,6 +108,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // 4.1
             addPlane(hitTestResult: hitResult)
         }
+        // 5.3
         recognizer.isEnabled = false
     }
     
