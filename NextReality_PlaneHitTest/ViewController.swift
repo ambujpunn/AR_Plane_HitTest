@@ -24,14 +24,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.showsStatistics = true
         
         // Create a new scene
-        //let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
-        // 2.1
         let scene = SCNScene()
         
         // Set the scene to the view
         sceneView.scene = scene
         
-        //2.3
         addPlane()
     }
     
@@ -55,21 +52,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
-    }
-    
-    // MARK: 2.2
-    private func addPlane() {
-        let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
-        let planeNode = scene.rootNode.childNode(withName: "planeBanner", recursively: true)
-        
-        planeNode?.scale = .init(0.05, 0.05, 0.05)
-        
-        let bannerNode = planeNode?.childNode(withName: "banner", recursively: true)
-        // Find banner material and update its diffuse contents:
-        let bannerMaterial = bannerNode?.geometry?.materials.first(where: { $0.name == "logo" })
-        bannerMaterial?.diffuse.contents = UIImage(named: "next_reality_logo")
-        
-        self.sceneView.scene.rootNode.addChildNode(planeNode!)
     }
     
     // MARK: - ARSCNViewDelegate
@@ -96,5 +78,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
+    }
+    
+    private func addPlane() {
+        let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
+        let planeNode = scene.rootNode.childNode(withName: "planeBanner", recursively: true)
+        
+        planeNode?.scale = .init(0.05, 0.05, 0.05)
+        
+        let bannerNode = planeNode?.childNode(withName: "banner", recursively: true)
+        // Find banner material and update its diffuse contents:
+        let bannerMaterial = bannerNode?.geometry?.materials.first(where: { $0.name == "logo" })
+        bannerMaterial?.diffuse.contents = UIImage(named: "next_reality_logo")
+        
+        self.sceneView.scene.rootNode.addChildNode(planeNode!)
     }
 }
