@@ -23,24 +23,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
-        // 3.2 Add feature points debug options
+        // Add feature points debug options
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
         // Create a new scene
-        // 2.1
         let scene = SCNScene()
         
         // Set the scene to the view
         sceneView.scene = scene
         
-        //2.3
-        //addPlane()
-        
-        //3.1
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
         sceneView.addGestureRecognizer(gestureRecognizer)
         
-        //5.1
         let doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
         gestureRecognizer.require(toFail: doubleTapGestureRecognizer)
@@ -69,88 +63,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-    
-    // MARK: 2.2
-    // 4.2: hitTestResult argument
-    private func addPlane(hitTestResult: ARHitTestResult) {
-        let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
-        let planeNode = scene.rootNode.childNode(withName: "planeBanner", recursively: true)
-        planeNode?.name = "plane"
-        
-        // 4.3
-        planeNode?.position = SCNVector3(hitTestResult.worldTransform.columns.3.x,hitTestResult.worldTransform.columns.3.y, hitTestResult.worldTransform.columns.3.z)
-        planeNode?.scale = .init(0.005, 0.005, 0.005)
-        
-        let bannerNode = planeNode?.childNode(withName: "banner", recursively: true)
-        // Find banner material and update its diffuse contents:
-        let bannerMaterial = bannerNode?.geometry?.materials.first(where: { $0.name == "logo" })
-        bannerMaterial?.diffuse.contents = UIImage(named: "next_reality_logo")
-        
-        sceneView.scene.rootNode.addChildNode(planeNode!)
-    }
-    
-    // MARK: 3.3
-    @objc func tapped(recognizer: UIGestureRecognizer) {
-        // Get exact position where touch happened on screen of iPhone (2D coordinate)
-        let touchPosition = recognizer.location(in: sceneView)
-        
-        // Conduct a hit test based on a feature point that ARKit detected to find out what 3D point this 2D coordinate relates to
-        let hitTestResult = sceneView.hitTest(touchPosition, types: .featurePoint)
-        
-        if !hitTestResult.isEmpty {
-            
-            guard let hitResult = hitTestResult.first else {
-                return
-            }
-            // 3.4
-            print(hitResult.worldTransform.columns.3)
-            
-            // 4.1
-            addPlane(hitTestResult: hitResult)
-        }
-        // 5.3
-        recognizer.isEnabled = false
-    }
-    
-    // MARK: 5.2
-    @objc func doubleTapped(recognizer: UIGestureRecognizer) {
-        // Get exact position where touch happened on screen of iPhone (2D coordinate)
-        let touchPosition = recognizer.location(in: sceneView)
-        
-        // Conduct hit test on tapped point
-        let hitTestResult = sceneView.hitTest(touchPosition, types: .featurePoint)
-        
-        guard let hitResult = hitTestResult.first else {
-            return
-        }
-        
-        // 5.3
-        let planeGeometry = SCNPlane(width: 0.2, height: 0.2)
-        let material = SCNMaterial()
-        material.diffuse.contents = UIImage(named: "finish_flags")
-        planeGeometry.materials = [material]
-        
-        let finishNode = SCNNode(geometry: planeGeometry)
-        finishNode.name = "finish"
-        finishNode.position = SCNVector3(hitResult.worldTransform.columns.3.x,hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
-        sceneView.scene.rootNode.addChildNode(finishNode)
-        
-        // Find plane node and animate it to finish point
-        if let planeNode = sceneView.scene.rootNode.childNode(withName: "plane", recursively: true) {
-            animatePlane(to: finishNode.position, node: planeNode)
-        }
-        
-    }
-    
-    // 5.4
-    private func animatePlane(to destinationPoint: SCNVector3, node: SCNNode) {
-        let action = SCNAction.move(to: destinationPoint, duration: 7)
-        node.runAction(action) { [weak self] in
-            if let finishNode = self?.sceneView.scene.rootNode.childNode(withName: "finish", recursively: true) {
-                finishNode.removeFromParentNode()
-            }
-        }
-    }
+   
     
     // MARK: - ARSCNViewDelegate
     
@@ -176,5 +89,77 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
+    }
+    
+    private func addPlane(hitTestResult: ARHitTestResult) {
+        let scene = SCNScene(named: "art.scnassets/plane_banner.scn")!
+        let planeNode = scene.rootNode.childNode(withName: "planeBanner", recursively: true)
+        planeNode?.name = "plane"
+        
+        planeNode?.position = SCNVector3(hitTestResult.worldTransform.columns.3.x,hitTestResult.worldTransform.columns.3.y, hitTestResult.worldTransform.columns.3.z)
+        planeNode?.scale = .init(0.005, 0.005, 0.005)
+        
+        let bannerNode = planeNode?.childNode(withName: "banner", recursively: true)
+        // Find banner material and update its diffuse contents:
+        let bannerMaterial = bannerNode?.geometry?.materials.first(where: { $0.name == "logo" })
+        bannerMaterial?.diffuse.contents = UIImage(named: "next_reality_logo")
+        
+        sceneView.scene.rootNode.addChildNode(planeNode!)
+    }
+    
+    @objc func tapped(recognizer: UIGestureRecognizer) {
+        // Get exact position where touch happened on screen of iPhone (2D coordinate)
+        let touchPosition = recognizer.location(in: sceneView)
+        
+        // Conduct a hit test based on a feature point that ARKit detected to find out what 3D point this 2D coordinate relates to
+        let hitTestResult = sceneView.hitTest(touchPosition, types: .featurePoint)
+        
+        if !hitTestResult.isEmpty {
+            
+            guard let hitResult = hitTestResult.first else {
+                return
+            }
+            print(hitResult.worldTransform.columns.3)
+            
+            addPlane(hitTestResult: hitResult)
+        }
+        recognizer.isEnabled = false
+    }
+    
+    @objc func doubleTapped(recognizer: UIGestureRecognizer) {
+        // Get exact position where touch happened on screen of iPhone (2D coordinate)
+        let touchPosition = recognizer.location(in: sceneView)
+        
+        // Conduct hit test on tapped point
+        let hitTestResult = sceneView.hitTest(touchPosition, types: .featurePoint)
+        
+        guard let hitResult = hitTestResult.first else {
+            return
+        }
+        
+        let planeGeometry = SCNPlane(width: 0.2, height: 0.2)
+        let material = SCNMaterial()
+        material.diffuse.contents = UIImage(named: "finish_flags")
+        planeGeometry.materials = [material]
+        
+        let finishNode = SCNNode(geometry: planeGeometry)
+        finishNode.name = "finish"
+        finishNode.position = SCNVector3(hitResult.worldTransform.columns.3.x,hitResult.worldTransform.columns.3.y, hitResult.worldTransform.columns.3.z)
+        sceneView.scene.rootNode.addChildNode(finishNode)
+        
+        // Find plane node and animate it to finish point
+        if let planeNode = sceneView.scene.rootNode.childNode(withName: "plane", recursively: true) {
+            animatePlane(to: finishNode.position, node: planeNode)
+        }
+        
+    }
+    
+    private func animatePlane(to destinationPoint: SCNVector3, node: SCNNode) {
+        let action = SCNAction.move(to: destinationPoint, duration: 7)
+        node.runAction(action) { [weak self] in
+            if let finishNode = self?.sceneView.scene.rootNode.childNode(withName: "finish", recursively: true) {
+                finishNode.removeFromParentNode()
+            }
+        }
     }
 }
